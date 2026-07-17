@@ -5,8 +5,8 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 import QueryProviders from "@/providers/query-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { Toaster } from "@/components/ui/sonner"
 import { ClerkProvider } from "@clerk/nextjs"
+import { Toaster } from "@/components/pebble-toast"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
 
