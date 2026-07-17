@@ -20,12 +20,17 @@ import { Input } from "@/components/ui/input"
 import { workspacesSchema } from "../../server/schema"
 import { useCreateWorkspace } from "../../hooks/use-create-workspaces"
 import { Spinner } from "@/components/ui/spinner"
+import { useRouter } from "next/navigation"
+import { useWorkspaces } from "../../hooks/use-workspaces"
+import { ArrowRight, Sparkles } from "lucide-react"
 
 
 
 export function CreateWorkspaceDialog() {
   const [open, setOpen] = React.useState(false)
   const {mutate,isPending}= useCreateWorkspace()
+  const { data}= useWorkspaces()
+  const router = useRouter()
   const form = useForm({
     defaultValues: { name: "" },
     validators: { onSubmit: workspacesSchema },
@@ -35,6 +40,7 @@ export function CreateWorkspaceDialog() {
             toast.success("workspace created successfully")
             setOpen(false)
             form.reset()
+            router.push(`/dashboard/workspace/${data?.[0].id}`)
         }
       })
     },
@@ -43,7 +49,9 @@ export function CreateWorkspaceDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>New workspace</Button>
+        <Button><Sparkles className="mr-2 h-4 w-4" />
+          Create workspace
+          <ArrowRight className="ml-2 h-4 w-4" /></Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-md">

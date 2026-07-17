@@ -1,10 +1,11 @@
-import { FlowCanvas } from "@/modules/workflows/ui/components/flow-canvas"
+import { WorkspaceEmptyState } from "@/modules/workspaces/ui/components/workspace-empty-state"
+
 
 
 export const DashboardView = () => {
   return (
     <>  
-        <FlowCanvas />
+    <WorkspaceEmptyState/>
     </>
   )
 }

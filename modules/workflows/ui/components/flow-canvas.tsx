@@ -37,7 +37,7 @@ function Canvas({ initialGraph }: { initialGraph?: WorkflowGraph }) {
   )
 
   return (
-    <div className="flex h-screen w-screen">
+    <div className="flex h-screen w-full overflow-hidden">
       <NodeSidebar />
       <div className="flex-1">
         <ReactFlow
