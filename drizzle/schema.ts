@@ -9,7 +9,7 @@ export const memberRoleEnum = pgEnum("member_role", ["owner", "editor", "viewer"
 // one row per Clerk Organization
 export const workspaces = pgTable("workspaces", {
   id: uuid("id").primaryKey().defaultRandom(),
-  orgId: text("org_id").notNull().unique(), // Clerk org id — 1:1 with a workspace
+  orgId: text("org_id").notNull(), // Clerk org id — 1:1 with a workspace
   name: text("name").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 })

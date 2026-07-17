@@ -18,6 +18,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSkeleton,
+  SidebarRail,
 } from "@/components/ui/sidebar"
 import { useWorkspaces } from "@/modules/workspaces/hooks/use-workspaces"
 import { CreateWorkspaceDialog } from "@/modules/workspaces/ui/components/create-workspace-dialog"
@@ -29,9 +30,9 @@ export function AppSidebar() {
   const isEmpty = !isLoading && (workspaces?.length ?? 0) === 0
 
   return (
-    <Sidebar variant="inset">
-      <SidebarHeader className="border-b border-border px-2 py-3">
-        <OrganizationSwitcher
+     <Sidebar variant="inset">
+      <SidebarHeader>
+         <OrganizationSwitcher
           hidePersonal
           afterSelectOrganizationUrl="/dashboard"
           afterCreateOrganizationUrl="/dashboard"
@@ -43,10 +44,8 @@ export function AppSidebar() {
           }}
         />
       </SidebarHeader>
-
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Workspaces</SidebarGroupLabel>
           <SidebarGroupContent>
             {isLoading && (
               <SidebarMenu>
@@ -69,7 +68,7 @@ export function AppSidebar() {
             {!isLoading && !isEmpty && (
               <SidebarMenu>
                 {workspaces?.map((workspace) => {
-                  const href = `/workspace/${workspace.id}`
+                  const href = `/dashboard/workspace/${workspace.id}`
                   const isActive = pathname.startsWith(href)
 
                   return (
@@ -88,10 +87,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      <SidebarFooter className="border-t border-border p-2">
-        <CreateWorkspaceDialog />
-      </SidebarFooter>
+      <SidebarRail />
     </Sidebar>
   )
 }

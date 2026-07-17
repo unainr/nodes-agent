@@ -46,7 +46,16 @@ const app = new Hono()
 
 		return c.json( result );
 	})
-	
+	.get("/:id",zValidator("param", z.object({ id: z.string() })),requireAuth, async (c) => {
+
+		const orgId = c.get("orgId"); // always the current org
+		const {id} = c.req.valid("param")
+		const result = await db.select().from(workspaces).where(and(eq(workspaces.orgId, orgId),eq(workspaces.id,id))).limit(1)
+		if(result.length === 0){
+			return c.json({message:"workspace not found"},404)
+		}
+		return c.json(result)
+	})
     // post api
     .post("/",requireAuth, zValidator("json",workspacesSchema),async (c)=>{
         const orgId = c.get("orgId")
