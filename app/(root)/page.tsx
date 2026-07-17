@@ -1,7 +1,11 @@
+import { FlowCanvas } from "@/modules/workflows/ui/components/flow-canvas"
 
 function HomePage() {
   return (
-    <div>HomePage</div>
+    <div>
+      <FlowCanvas />
+    
+    </div>
   )
 }
 
