@@ -1,9 +1,8 @@
-import { FlowCanvas } from "@/modules/workflows/ui/components/flow-canvas"
 
 function HomePage() {
   return (
-    <div>
-      <FlowCanvas />
+    <div className="flex flex-col items-center justify-center min-h-screen">
+    hello worldd
     
     </div>
   )
