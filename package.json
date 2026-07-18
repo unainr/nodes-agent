@@ -18,6 +18,7 @@
     "@hono/zod-validator": "^0.8.0",
     "@imagekit/nodejs": "^7.9.1",
     "@liveblocks/client": "^3.22.0",
+    "@liveblocks/node": "^3.22.0",
     "@liveblocks/react": "^3.22.0",
     "@liveblocks/react-flow": "^3.22.0",
     "@liveblocks/react-ui": "^3.22.0",

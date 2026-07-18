@@ -1,4 +1,5 @@
 
+import liveblockserver from "@/modules/liveblocks/ui/components/server/liveblockserver";
 import workspaces from "@/modules/workspaces/server/workspaces";
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
@@ -7,6 +8,7 @@ const app = new Hono().basePath("/api");
 
 const routes = app
 	.route("/workspaces", workspaces)
+	.route("/liveblocks",liveblockserver)
 	
 
 export const GET = handle(app);
