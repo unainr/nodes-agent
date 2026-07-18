@@ -1,3 +1,4 @@
+import { Room } from "@/modules/liveblocks/ui/components/room"
 import { WorkSpacesView } from "@/modules/workspaces/ui/view/workspaces-view"
 
 interface WorkSpacePageProps {
@@ -6,9 +7,9 @@ interface WorkSpacePageProps {
 const WorkSpacePage = async({ params }: WorkSpacePageProps) => {
     const {id} = await params
   return (
-    <div>
+    <Room roomId={id}>
         <WorkSpacesView id={id} />
-    </div>
+    </Room>
   )
 }
 
