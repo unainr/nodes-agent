@@ -1,3 +1,4 @@
+import { liveblocks } from "@/lib/liveblocks"
 import { Room } from "@/modules/liveblocks/ui/components/room"
 import { WorkSpacesView } from "@/modules/workspaces/ui/view/workspaces-view"
 import { auth } from "@clerk/nextjs/server"
@@ -10,6 +11,14 @@ const WorkSpacePage = async({ params }: WorkSpacePageProps) => {
     const {id} = await params
      const { orgId } = await auth()
      if(!orgId)redirect("/sign-in") 
+        await liveblocks.getOrCreateRoom(id,{
+    organizationId:orgId,
+    defaultAccesses:[],
+    groupsAccesses:{
+        [orgId]:["room:write"]
+    },
+    
+})
   return (
     <Room roomId={id}>
         <WorkSpacesView id={id} />

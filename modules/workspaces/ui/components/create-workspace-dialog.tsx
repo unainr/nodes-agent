@@ -1,8 +1,8 @@
 // features/workspaces/create-workspace-dialog.tsx
 "use client"
 
-import * as React from "react"
 import { useForm } from "@tanstack/react-form"
+import * as React from "react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -17,30 +17,28 @@ import {
 } from "@/components/ui/dialog"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { workspacesSchema } from "../../server/schema"
-import { useCreateWorkspace } from "../../hooks/use-create-workspaces"
 import { Spinner } from "@/components/ui/spinner"
-import { useRouter } from "next/navigation"
-import { useWorkspaces } from "../../hooks/use-workspaces"
 import { ArrowRight, Sparkles } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useCreateWorkspace } from "../../hooks/use-create-workspaces"
+import { workspacesSchema } from "../../server/schema"
 
 
 
 export function CreateWorkspaceDialog() {
   const [open, setOpen] = React.useState(false)
   const {mutate,isPending}= useCreateWorkspace()
-  const { data}= useWorkspaces()
   const router = useRouter()
   const form = useForm({
     defaultValues: { name: "" },
     validators: { onSubmit: workspacesSchema },
      onSubmit:  ({ value }) => {
         mutate(value,{
-        onSuccess:()=>{
+        onSuccess:(data)=>{
             toast.success("workspace created successfully")
             setOpen(false)
             form.reset()
-            router.push(`/dashboard/workspace/${data?.[0].id}`)
+            router.push(`/dashboard/workspace/${data.id}`)
         }
       })
     },

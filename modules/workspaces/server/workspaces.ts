@@ -59,12 +59,15 @@ const app = new Hono()
     // post api
     .post("/",requireAuth, zValidator("json",workspacesSchema),async (c)=>{
         const orgId = c.get("orgId")
+		const userId = c.get("userId")
         const { name } = await c.req.valid("json")
 
        
         const [data] = await db.insert(workspaces).values({
+
             name,
             orgId,
+			createdByUserId:userId
         }).returning()
         return c.json(data,201)
     })

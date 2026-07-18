@@ -36,6 +36,7 @@ export function AppSidebar() {
           hidePersonal
           afterSelectOrganizationUrl="/dashboard"
           afterCreateOrganizationUrl="/dashboard"
+          afterLeaveOrganizationUrl="/dashboard"
           appearance={{
             elements: {
               rootBox: "w-full",
