@@ -9,6 +9,10 @@ import {
 import type { Edge, OnNodesChange, OnEdgesChange, OnConnect } from "@xyflow/react"
 import "@xyflow/react/dist/style.css"
 
+import "@liveblocks/react-ui/styles.css";
+import "@liveblocks/react-flow/styles.css";
+import { useLiveblocksFlow, Cursors } from "@liveblocks/react-flow";
+
 import { NodeSidebar } from "./node-sidebar"
 import { StepNodeType } from "../../nodes/node-types"
 import { WorkflowGraph } from "@/drizzle/schema"
@@ -20,21 +24,25 @@ const initialNodes: StepNodeType[] = [
 const initialEdges: Edge[] = []
 
 function Canvas({ initialGraph }: { initialGraph?: WorkflowGraph }) {
-  const [nodes, setNodes] = useState<StepNodeType[]>(initialGraph?.nodes ?? initialNodes)
-  const [edges, setEdges] = useState<Edge[]>(initialGraph?.edges ?? initialEdges)
 
-  const onNodesChange: OnNodesChange<StepNodeType> = useCallback(
-    (changes) => setNodes((snapshot) => applyNodeChanges(changes, snapshot)),
-    [],
-  )
-  const onEdgesChange: OnEdgesChange = useCallback(
-    (changes) => setEdges((snapshot) => applyEdgeChanges(changes, snapshot)),
-    [],
-  )
-  const onConnect: OnConnect = useCallback(
-    (params) => setEdges((snapshot) => addEdge(params, snapshot)),
-    [],
-  )
+
+const {
+    nodes,
+    edges,
+    onNodesChange,
+    onEdgesChange,
+    onConnect,
+    onDelete,
+  } = useLiveblocksFlow({
+    suspense: true,
+    nodes: {
+      initial: initialGraph?.nodes??initialNodes,
+    },
+    edges: {
+      initial: initialGraph?.edges??initialEdges,
+    },
+  });
+
 
   return (
     <div className="flex h-screen w-full overflow-hidden">
@@ -43,6 +51,7 @@ function Canvas({ initialGraph }: { initialGraph?: WorkflowGraph }) {
         <ReactFlow
           nodes={nodes}
           edges={edges}
+          onDelete={onDelete}
           nodeTypes={nodeTypes}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
@@ -52,6 +61,7 @@ function Canvas({ initialGraph }: { initialGraph?: WorkflowGraph }) {
 						hideAttribution: true,
 					}}
         >
+           <Cursors />
         <Background gap={12} size={1} />
         	<Controls className="text-black" />
         </ReactFlow>
