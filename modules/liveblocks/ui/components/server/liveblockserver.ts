@@ -12,6 +12,7 @@ import { liveblocks } from "@/lib/liveblocks"
 // schame
 
 // ─── auth middleware ──────────────────────────────────────────────────────────
+type UserInfo = Liveblocks["UserMeta"]["info"]
 
 const requireAuth = createMiddleware<{
   Variables: { userId: string; orgId: string }
@@ -44,7 +45,7 @@ const app = new Hono()
       {
         userId,
         groupIds: [orgId],
-        organizationId:orgId,
+        organizationId: orgId,
       },
       {
         userInfo: {
@@ -59,6 +60,61 @@ const app = new Hono()
     )
     return new Response(body, { status })
   })
-  
+  .post("/users", requireAuth, async (c) => {
+    const orgId = c.get("orgId")
+    const userId = c.get("userId")
+    const clerkClient = c.get("clerk")
+
+    let body: unknown
+    try {
+      body = await c.req.json()
+    } catch {
+      return c.json({ error: "Invalid JSON body" }, 400)
+    }
+
+    const { userIds } = body as { userIds?: unknown }
+
+    if (
+      !Array.isArray(userIds) ||
+      userIds.some((id) => typeof id !== "string")
+    ) {
+      return c.json({ error: "Expected { userIds: string[] }" }, 400)
+    }
+
+    const ids = userIds as string[]
+
+    if (ids.length === 0) {
+      return c.json([])
+    }
+
+    // Scope lookups to the caller's org so display info can't be
+    // harvested for users outside the caller's tenant.
+    const { data: users } = await clerkClient.users.getUserList({
+      userId: ids,
+      organizationId: [orgId],
+      limit: ids.length,
+    })
+
+    const usersById = new Map(users.map((user) => [user.id, user]))
+
+    // Must return one entry per requested ID, in the same order —
+    // Liveblocks' resolveUsers depends on positional alignment with
+    // the userIds it sent, not just a set of resolved users.
+    const resolved: (UserInfo | null)[] = ids.map((id) => {
+      const user = usersById.get(id)
+      if (!user) return null
+
+      return {
+        name:
+          user.fullName ??
+          user.username ??
+          user.primaryEmailAddress?.emailAddress ??
+          "Anonymous",
+        avatar: user.imageUrl,
+      }
+    })
+
+    return c.json(resolved)
+  })
 
 export default app
