@@ -4,11 +4,11 @@
 import { useCallback, useState } from "react"
 import {
   ReactFlow, ReactFlowProvider, Background, Controls,
-  applyNodeChanges, applyEdgeChanges, addEdge,
+  Panel
 } from "@xyflow/react"
-import type { Edge, OnNodesChange, OnEdgesChange, OnConnect } from "@xyflow/react"
+import type { Edge } from "@xyflow/react"
 import "@xyflow/react/dist/style.css"
-
+import {AvatarStack} from "@liveblocks/react-ui"
 import "@liveblocks/react-ui/styles.css";
 import "@liveblocks/react-flow/styles.css";
 import { useLiveblocksFlow, Cursors } from "@liveblocks/react-flow";
@@ -62,6 +62,10 @@ const {
 					}}
         >
            <Cursors />
+           <Panel position="top-right">
+            <AvatarStack/>
+
+           </Panel>
         <Background gap={12} size={1} />
         	<Controls className="text-black" />
         </ReactFlow>
