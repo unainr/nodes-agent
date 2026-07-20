@@ -1,10 +1,13 @@
 // features/workflows/nodes/condition-node.tsx
 import { useReactFlow } from "@xyflow/react"
-import { NodeShell } from "./node-shell"
+
 import type { NodeProps } from "@xyflow/react"
-import { nodeRegistry } from "../../nodes/node-registry"
-import { ConditionNodeData, StepNodeType } from "../../nodes/node-types"
+
+
 import { Textarea } from "@/components/ui/textarea"
+import { nodeRegistry } from "./node-registry"
+import { ConditionNodeData, StepNodeType } from "./node-types"
+import { NodeShell } from "../ui/components/node-shell"
 
 export function ConditionNode({ id, data, selected }: NodeProps<StepNodeType>) {
   const { updateNodeData } = useReactFlow()
