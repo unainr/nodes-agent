@@ -3,46 +3,66 @@
 
 import { useCallback, useState } from "react"
 import {
-  ReactFlow, ReactFlowProvider, Background, Controls,
-  Panel
+  ReactFlow,
+  ReactFlowProvider,
+  Background,
+  Controls,
+  Panel,
 } from "@xyflow/react"
 import type { Edge } from "@xyflow/react"
 import "@xyflow/react/dist/style.css"
-import {AvatarStack} from "@liveblocks/react-ui"
-import "@liveblocks/react-ui/styles.css";
-import "@liveblocks/react-flow/styles.css";
-import { useLiveblocksFlow, Cursors } from "@liveblocks/react-flow";
+import { AvatarStack } from "@liveblocks/react-ui"
+import "@liveblocks/react-ui/styles.css"
+import "@liveblocks/react-flow/styles.css"
+import { useLiveblocksFlow, Cursors } from "@liveblocks/react-flow"
 
 import { NodeSidebar } from "./node-sidebar"
 import { StepNodeType } from "../../nodes/node-types"
 import { WorkflowGraph } from "@/drizzle/schema"
 import { nodeTypes } from "../../nodes"
+import { useSaveWorkspaceGraph } from "../../hooks/use-update-worklfow"
+import { Button } from "@/components/ui/button"
+import { Save } from "lucide-react"
+import { toast } from "sonner"
 
 const initialNodes: StepNodeType[] = [
-  { id: "start-1", type: "start", position: { x: 0, y: 0 }, data: { kind: "start" } },
+  {
+    id: "start-1",
+    type: "start",
+    position: { x: 0, y: 0 },
+    data: { kind: "start" },
+  },
 ]
 const initialEdges: Edge[] = []
 
-function Canvas({ initialGraph }: { initialGraph?: WorkflowGraph }) {
-
-
-const {
-    nodes,
-    edges,
-    onNodesChange,
-    onEdgesChange,
-    onConnect,
-    onDelete,
-  } = useLiveblocksFlow({
-    suspense: true,
-    nodes: {
-      initial: initialGraph?.nodes??initialNodes,
-    },
-    edges: {
-      initial: initialGraph?.edges??initialEdges,
-    },
-  });
-
+function Canvas({
+  initialGraph,
+  id,
+}: {
+  initialGraph?: WorkflowGraph
+  id: string
+}) {
+  const { mutate: saveGraph, isPending } = useSaveWorkspaceGraph(id)
+  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, onDelete } =
+    useLiveblocksFlow({
+      suspense: true,
+      nodes: {
+        initial: initialGraph?.nodes ?? initialNodes,
+      },
+      edges: {
+        initial: initialGraph?.edges ?? initialEdges,
+      },
+    })
+  const handleSave = () => {
+    saveGraph(
+      { nodes: nodes as StepNodeType[], edges },
+      {
+        onSuccess: () => {
+          toast.success("workflow save successfully")
+        },
+      }
+    )
+  }
 
   return (
     <div className="flex h-screen w-full overflow-hidden">
@@ -52,29 +72,43 @@ const {
           nodes={nodes}
           edges={edges}
           onDelete={onDelete}
+          deleteKeyCode={"Delete"}
           nodeTypes={nodeTypes}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           fitView
           proOptions={{
-						hideAttribution: true,
-					}}
+            hideAttribution: true,
+          }}
         >
-           <Cursors />
-           <Panel position="top-right">
-            <AvatarStack/>
-
-           </Panel>
-        <Background gap={12} size={1} />
-        	<Controls className="text-black" />
+          <Cursors />
+          <Panel position="top-right">
+            <AvatarStack />
+          </Panel>
+          <Panel position="bottom-center">
+            <Button
+              size="lg"
+              onClick={handleSave}
+              disabled={isPending}
+              className="gap-1.5"
+            >
+              <Save className="h-3.5 w-3.5" />
+              {isPending ? "Saving..." : "Save"}
+            </Button>
+          </Panel>
+          <Background gap={12} size={1} />
+          <Controls className="text-black" />
         </ReactFlow>
       </div>
     </div>
   )
 }
 
-export function FlowCanvas(props: { initialGraph?: WorkflowGraph }) {
+export function FlowCanvas(props: {
+  id: string
+  initialGraph?: WorkflowGraph
+}) {
   return (
     <ReactFlowProvider>
       <Canvas {...props} />

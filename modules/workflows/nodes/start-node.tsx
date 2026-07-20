@@ -1,8 +1,10 @@
 // features/workflows/nodes/start-node.tsx
-import { nodeRegistry } from "../../nodes/node-registry"
-import { StepNodeType } from "../../nodes/node-types"
-import { NodeShell } from "./node-shell"
+
+
 import type { NodeProps } from "@xyflow/react"
+import { StepNodeType } from "./node-types"
+import { nodeRegistry } from "./node-registry"
+import { NodeShell } from "../ui/components/node-shell"
 
 export function StartNode({ selected }: NodeProps<StepNodeType>) {
   const def = nodeRegistry.start

@@ -20,8 +20,8 @@ export const WorkSpacesView = ({ id }: Props) => {
   }
 
   return (
-    <div>
-        <FlowCanvas/>
-    </div>
+    <>
+        <FlowCanvas id={id}/>
+    </>
   )
 }
