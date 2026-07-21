@@ -33,7 +33,7 @@ export function AgentNode({ id, data, selected }: NodeProps<StepNodeType>) {
 
       <Textarea
         className="nodrag nopan w-full resize-none text-xs"
-        rows={3}
+        rows={4}
         placeholder="System prompt..."
         value={prompt}
         onChange={(e) => updateNodeData(id, { prompt: e.target.value })}
