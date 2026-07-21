@@ -1,4 +1,5 @@
 
+import server from "@/modules/chat/server";
 import liveblockserver from "@/modules/liveblocks/ui/components/server/liveblockserver";
 import workflow from "@/modules/workflows/server/workflow";
 import workspaces from "@/modules/workspaces/server/workspaces";
@@ -11,6 +12,7 @@ const routes = app
 	.route("/workspaces", workspaces)
 	.route("/liveblocks",liveblockserver)
 	.route("/workflow",workflow)
+	.route("/chat",server)
 	
 
 export const GET = handle(app);

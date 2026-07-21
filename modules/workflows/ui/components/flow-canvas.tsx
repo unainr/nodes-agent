@@ -17,13 +17,14 @@ import "@liveblocks/react-flow/styles.css"
 import { useLiveblocksFlow, Cursors } from "@liveblocks/react-flow"
 
 import { NodeSidebar } from "./node-sidebar"
-import { StepNodeType } from "../../nodes/node-types"
+import { AgentNodeData, StepNodeType } from "../../nodes/node-types"
 import { WorkflowGraph } from "@/drizzle/schema"
 import { nodeTypes } from "../../nodes"
 import { useSaveWorkspaceGraph } from "../../hooks/use-update-worklfow"
 import { Button } from "@/components/ui/button"
-import { Save } from "lucide-react"
+import { MessageCircle, Save, X } from "lucide-react"
 import { toast } from "sonner"
+import { WorkflowChatPanel } from "@/modules/chat/ui/components/chat-panel"
 
 const initialNodes: StepNodeType[] = [
   {
@@ -43,6 +44,8 @@ function Canvas({
   id: string
 }) {
   const { mutate: saveGraph, isPending } = useSaveWorkspaceGraph(id)
+    const [showChat, setShowChat] = useState(false)
+
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect, onDelete } =
     useLiveblocksFlow({
       suspense: true,
@@ -63,7 +66,10 @@ function Canvas({
       }
     )
   }
-
+const agentNode = nodes.find((n) => n.type === "agent")
+const toggleChat = () => {
+  setShowChat((prev) => !prev);
+};
   return (
     <div className="flex h-screen w-full overflow-hidden">
       <NodeSidebar />
@@ -85,6 +91,12 @@ function Canvas({
           <Cursors />
           <Panel position="top-right">
             <AvatarStack />
+             
+          </Panel>
+          <Panel>
+            <Button onClick={toggleChat}>
+  {showChat ? "Hide Chat" : "Show Chat"}
+</Button>
           </Panel>
           <Panel position="bottom-center">
             <Button
@@ -99,8 +111,18 @@ function Canvas({
           </Panel>
           <Background gap={12} size={1} />
           <Controls className="text-black" />
+       
         </ReactFlow>
       </div>
+      {/* ← this whole block was missing — nothing rendered the panel */}
+       {showChat && (
+    <WorkflowChatPanel
+    nodes={nodes as StepNodeType[]}
+    edges={edges}
+    onClose={() => setShowChat(false)}
+  />
+  )}
+     
     </div>
   )
 }
