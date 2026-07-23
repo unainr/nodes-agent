@@ -6,9 +6,10 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { clerkMiddleware, getAuth } from "@clerk/hono";
 import { createMiddleware } from "hono/factory";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, sql } from "drizzle-orm";
 import { workspaces } from "@/drizzle/schema";
 import { workspacesSchema } from "./schema";
+import { FEATURE_KEYS, FREE_LIMITS } from "@/lib/billing/plans";
 
 
 
@@ -62,7 +63,20 @@ const app = new Hono()
 		const userId = c.get("userId")
         const { name } = await c.req.valid("json")
 
-       
+       const { has } = getAuth(c) // ← same object, no separate import needed
+		   const hasUnlimited = has({ feature: FEATURE_KEYS.unlimitedWorkspaces })
+	   
+		   if (!hasUnlimited) {
+			 const [{ count }] = await db
+			   .select({ count: sql<number>`count(*)` })
+			   .from(workspaces)
+			   .where(eq(workspaces.orgId, orgId))
+	   
+			 if (count >= FREE_LIMITS.maxWorkspaces) {
+			   return c.json({ message: "Workspace limit reached", code: "UPGRADE_REQUIRED" }, 403)
+			 }
+		   }
+	   
         const [data] = await db.insert(workspaces).values({
 
             name,
@@ -71,5 +85,19 @@ const app = new Hono()
         }).returning()
         return c.json(data,201)
     })
+	// modules/workspaces/api/route.ts (add alongside your existing routes)
+.delete("/:id", requireAuth, zValidator("param", z.object({ id: z.string() })), async (c) => {
+  const orgId = c.get("orgId")
+		const userId = c.get("userId")
+  const { id } = c.req.valid("param")
+
+  const [deleted] = await db
+    .delete(workspaces)
+    .where(and(eq(workspaces.id, id), eq(workspaces.orgId, orgId),eq(workspaces.createdByUserId,userId)))
+    .returning()
+
+  if (!deleted) return c.json({ message: "Workspace not found" }, 404)
+  return c.json(deleted)
+})
 
 export default app;

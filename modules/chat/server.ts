@@ -17,19 +17,24 @@ import { StepNodeType } from "../workflows/nodes/node-types"
 import type { Edge } from "@xyflow/react"
 import { buildWorkflowSystemPrompt } from "@/lib/utils"
 import { buildWorkflowTools } from "../workflows/execution/build-workflow-tools"
+import { currentBillingMonth, FEATURE_KEYS, FREE_LIMITS } from "@/lib/billing/plans"
+import { aiUsage } from "@/drizzle/schema"
+import { db } from "@/drizzle/db"
+import { sql } from "drizzle-orm"
 
 // schame
 
 // ─── auth middleware ──────────────────────────────────────────────────────────
 
 const requireAuth = createMiddleware<{
-  Variables: { userId: string; orgId: string }
+  Variables: { userId: string; orgId: string; has: ReturnType<typeof getAuth>["has"]  }
 }>(async (c, next) => {
   const auth = getAuth(c)
   if (!auth?.userId) return c.json({ message: "Unauthorized" }, 401)
   if (!auth.orgId) return c.json({ message: "No organization selected" }, 401)
   c.set("userId", auth.userId)
   c.set("orgId", auth.orgId)
+  c.set("has", auth.has)
   await next()
 })
 
@@ -44,9 +49,28 @@ const app = new Hono()
   // Get api
   // modules/workspaces/api/route.ts (add alongside GET "/", GET "/:id", POST "/")
   .post("/", requireAuth, async (c) => {
+    const orgId = c.get("orgId")
       const { messages, nodes, edges }: { messages: UIMessage[]; nodes: StepNodeType[]; edges: Edge[] } =
     await c.req.json()
     // const modelDef = getModelDefinition(model)
+    const has = c.get("has")
+const hasUnlimited = has({ feature: FEATURE_KEYS.unlimitedAiRuns })
+if (!hasUnlimited) {
+    const month = currentBillingMonth()
+
+    const [usage] = await db
+      .insert(aiUsage)
+      .values({ orgId, month, count: 1 })
+      .onConflictDoUpdate({
+        target: [aiUsage.orgId, aiUsage.month],
+        set: { count: sql`${aiUsage.count} + 1` },
+      })
+      .returning()
+
+    if (usage.count > FREE_LIMITS.maxAiRunsPerMonth) {
+      return c.json({ message: "AI test run limit reached", code: "UPGRADE_REQUIRED" }, 403)
+    }
+  }
 const modelMessages = await convertToModelMessages(messages);
   const tools = buildWorkflowTools(nodes)
 
