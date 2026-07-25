@@ -17,7 +17,8 @@ export function ConditionNode({ id, data, selected }: NodeProps<StepNodeType>) {
   return (
     <NodeShell icon={def.icon} title={def.label} color={def.color} selected={selected}>
       <Textarea
-        className="nodrag nopan w-full resize-none rounded-md border border-border bg-background px-2 py-1 text-xs"
+          className="nodrag nopan field-sizing-fixed h-60 max-h-24 w-full overflow-hidden resize-none  text-xs"
+
         rows={3}
         placeholder="e.g. If the status is done, continue"
         value={instruction}

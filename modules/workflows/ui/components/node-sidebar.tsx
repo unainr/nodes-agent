@@ -27,6 +27,7 @@ export function NodeSidebar() {
   <SheetTrigger asChild>
     <Button
       size="icon"
+      variant="primary"
       className="fixed right-6 top-1/2 z-10 h-12 w-12 -translate-y-1/2 rounded shadow-lg transition-transform hover:scale-105"
     >
       <Plus className="h-5 w-5" />
