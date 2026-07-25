@@ -30,21 +30,21 @@ export function MainHeader() {
 					<div className="flex h-full items-center">
 						<Link href="/" className="flex items-center gap-2 pr-5">
 							<Image
-								src="/next.svg"
+								src="/logo.svg"
 								alt="CareInktake Logo"
 								width={800}
 								height={800}
 								loading="eager"
-								className="h-12 w-auto object-contain hidden dark:block"
+								className="h-8 w-auto object-contain hidden dark:block"
 							/>
 
 							<Image
-								src="/next.svg"
+								src="/logo1.svg"
 								alt="CareInktake Logo"
 								width={800}
 								height={800}
 								loading="eager"
-								className="h-12 w-auto object-contain dark:hidden block"
+								className="h-8 w-auto object-contain dark:hidden block"
 							/>
 						</Link>
 
@@ -60,7 +60,7 @@ export function MainHeader() {
 										className={cn(
 											"relative flex h-full items-center px-3.5 text-sm font-medium transition-colors duration-150",
 											isActive(item.href)
-												? "bg-linear-to-r from-cyan-500 via-blue-400 to-indigo-500 bg-clip-text text-transparent after:absolute after:bottom-0 after:left-3.5 after:right-3.5 after:h-0.5 after:rounded-t after:bg-[#6cc0f8]"
+												? "bg-[#0070FF] bg-clip-text text-transparent after:absolute after:bottom-0 after:left-3.5 after:right-3.5 after:h-0.5 after:rounded-t after:bg-[#6cc0f8]"
 												: "text-muted-foreground hover:text-foreground",
 										)}>
 										{item.name}
@@ -108,8 +108,8 @@ export function MainHeader() {
 								className={cn(
 									"rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
 									isActive(item.href)
-										? "bg-red-500/10 text-[#f86c88]"
-										: "text-muted-foreground hover:bg-white/5 hover:text-foreground",
+										? "bg-[#0070FF] bg-clip-text text-transparent "
+										: "text-muted-foreground hover:text-foreground",
 								)}>
 								{item.name}
 							</Link>

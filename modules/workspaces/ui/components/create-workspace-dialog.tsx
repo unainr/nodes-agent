@@ -34,8 +34,10 @@ import { FEATURE_KEYS, FREE_LIMITS } from "@/lib/billing/plans"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@clerk/nextjs"
-
-export function CreateWorkspaceDialog() {
+interface Props {
+  trigger?: React.ReactNode
+}
+export function CreateWorkspaceDialog({ trigger }: Props) {
   const [open, setOpen] = React.useState(false)
   const { mutate, isPending } = useCreateWorkspace()
   const router = useRouter()
@@ -71,11 +73,13 @@ export function CreateWorkspaceDialog() {
   </Button>
 ) : (
   <DialogTrigger asChild>
-    <Button>
+     {trigger ?? (
+    <Button variant="primary" size={'lg'}>
       <Sparkles className="mr-2 h-4 w-4" />
       Create workspace
       <ArrowRight className="ml-2 h-4 w-4" />
     </Button>
+  )}
   </DialogTrigger>
 )}
       <DialogContent className="sm:max-w-md">
@@ -132,6 +136,7 @@ export function CreateWorkspaceDialog() {
             Cancel
           </Button>
           <Button
+          variant="primary"
             type="submit"
             disabled={isPending}
             form="create-workspace-form"

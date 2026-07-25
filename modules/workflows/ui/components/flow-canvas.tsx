@@ -25,6 +25,14 @@ import { Button } from "@/components/ui/button"
 import { MessageCircle, Save, X } from "lucide-react"
 import { toast } from "sonner"
 import { WorkflowChatPanel } from "@/modules/chat/ui/components/chat-panel"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { MessageSquare, MessageSquareOff } from "lucide-react"
+import { Separator } from "@/components/ui/separator"
 
 const initialNodes: StepNodeType[] = [
   {
@@ -44,7 +52,7 @@ function Canvas({
   id: string
 }) {
   const { mutate: saveGraph, isPending } = useSaveWorkspaceGraph(id)
-    const [showChat, setShowChat] = useState(false)
+  const [showChat, setShowChat] = useState(false)
 
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect, onDelete } =
     useLiveblocksFlow({
@@ -66,10 +74,10 @@ function Canvas({
       }
     )
   }
-const agentNode = nodes.find((n) => n.type === "agent")
-const toggleChat = () => {
-  setShowChat((prev) => !prev);
-};
+  const agentNode = nodes.find((n) => n.type === "agent")
+  const toggleChat = () => {
+    setShowChat((prev) => !prev)
+  }
   return (
     <div className="flex h-screen w-full overflow-hidden">
       <NodeSidebar />
@@ -91,38 +99,75 @@ const toggleChat = () => {
           <Cursors />
           <Panel position="top-right">
             <AvatarStack />
-             
           </Panel>
-          <Panel>
-            <Button onClick={toggleChat}>
-  {showChat ? "Hide Chat" : "Show Chat"}
-</Button>
-          </Panel>
+
           <Panel position="bottom-center">
-            <Button
-              size="lg"
-              onClick={handleSave}
-              disabled={isPending}
-              className="gap-1.5"
-            >
-              <Save className="h-3.5 w-3.5" />
-              {isPending ? "Saving..." : "Save"}
-            </Button>
+            <div className="flex items-center gap-2 rounded-full border bg-accent px-2 py-1.5 shadow-lg backdrop-blur">
+              <TooltipProvider delayDuration={200}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={showChat ? "secondary" : "outline"}
+                      size="lg"
+                      onClick={toggleChat}
+                      aria-label={showChat ? "Hide Chat" : "Show Chat"}
+                      className="gap-1.5 rounded-full px-3"
+                    >
+                      {showChat ? (
+                        <MessageSquareOff className="h-4 w-4" />
+                      ) : (
+                        <MessageSquare className="h-4 w-4" />
+                      )}
+                      <span className="text-sm">
+                        {showChat ? "Hide Chat" : "Chat"}
+                      </span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p>
+                      {showChat
+                        ? "Close the chat panel"
+                        : "Open the chat panel"}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+
+                <Separator orientation="vertical" className="h-6" />
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="lg"
+                      variant="primary"
+                      onClick={handleSave}
+                      disabled={isPending}
+                      className="gap-1.5 rounded-full px-4"
+                    >
+                      <Save className="h-3.5 w-3.5" />
+                      <span className="text-sm">
+                        {isPending ? "Saving..." : "Save"}
+                      </span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p>Save changes</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           </Panel>
           <Background gap={12} size={1} />
           <Controls className="text-black" />
-       
         </ReactFlow>
       </div>
       {/* ← this whole block was missing — nothing rendered the panel */}
-       {showChat && (
-    <WorkflowChatPanel
-    nodes={nodes as StepNodeType[]}
-    edges={edges}
-    onClose={() => setShowChat(false)}
-  />
-  )}
-     
+      {showChat && (
+        <WorkflowChatPanel
+          nodes={nodes as StepNodeType[]}
+          edges={edges}
+          onClose={() => setShowChat(false)}
+        />
+      )}
     </div>
   )
 }

@@ -1,66 +1,40 @@
 // components/app-sidebar.tsx
 "use client"
 
-import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
 import { OrganizationSwitcher } from "@clerk/nextjs"
-import { Folder, FolderPlus, Trash2 } from "lucide-react"
+import { Folder, FolderPlus, Plus } from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSkeleton,
-  SidebarRail,
+  SidebarRail
 } from "@/components/ui/sidebar"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 import { useWorkspaces } from "@/modules/workspaces/hooks/use-workspaces"
+import { WorkSpaceDeleteDialog } from "@/modules/workspaces/ui/components/workspace-delete-dialog"
 import { CreateWorkspaceDialog } from "@/modules/workspaces/ui/components/create-workspace-dialog"
-import { useDeleteWorkspace } from "@/modules/workspaces/hooks/use-delete-workspace"
-import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
 
 export function AppSidebar() {
- const pathname = usePathname();
-const router = useRouter();
+  const pathname = usePathname()
+ 
 
-const { data: workspaces, isLoading } = useWorkspaces();
+  const { data: workspaces, isLoading } = useWorkspaces()
 
-const id = workspaces?.[0]?.id ?? "";
+  
 
-const {
-  mutate: deleteWorkspace,
-  isPending: isDeleting,
-} = useDeleteWorkspace(id);
+  const isEmpty = !isLoading && (workspaces?.length ?? 0) === 0
 
-const isEmpty = !isLoading && (workspaces?.length ?? 0) === 0;
-
-const handleDelete = () => {
-  if (!id) return;
-
-  deleteWorkspace(undefined, {
-    onSuccess: () => {
-      toast.success("Workspace deleted successfully");
-    },
-  });
-};
+ 
   return (
     <Sidebar variant="inset">
       <SidebarHeader>
@@ -80,6 +54,16 @@ const handleDelete = () => {
       </SidebarHeader>
 
       <SidebarContent>
+        <div className="flex items-center justify-between px-2">
+  <SidebarGroupLabel className="px-0">Workspaces</SidebarGroupLabel>
+  <CreateWorkspaceDialog
+    trigger={
+      <Button size="icon" variant="ghost" className="h-6 w-6">
+        <Plus className="h-3.5 w-3.5" />
+      </Button>
+    }
+  />
+</div>
         <SidebarGroup>
           <SidebarGroupContent>
             {isLoading && (
@@ -118,36 +102,10 @@ const handleDelete = () => {
                           <span className="truncate">{workspace.name}</span>
                         </Link>
                       </SidebarMenuButton>
-
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <SidebarMenuAction showOnHover>
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </SidebarMenuAction>
-                        </AlertDialogTrigger>
-
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              Delete "{workspace.name}"?
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This permanently deletes the workspace and
-                              everything in it. This can't be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={handleDelete}
-                              disabled={isDeleting}
-                              className="text-destructive-foreground bg-destructive hover:bg-destructive/90"
-                            >
-                              {isDeleting ? "Deleting..." : "Delete"}
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                      <WorkSpaceDeleteDialog
+                        name={workspace.name}
+                        id={workspace.id}
+                      />
                     </SidebarMenuItem>
                   )
                 })}
@@ -156,8 +114,6 @@ const handleDelete = () => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-     
 
       <SidebarRail />
     </Sidebar>
