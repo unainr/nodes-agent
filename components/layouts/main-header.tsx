@@ -35,7 +35,7 @@ export function MainHeader() {
 								width={800}
 								height={800}
 								loading="eager"
-								className="h-8 w-auto object-contain hidden dark:block"
+								className="h-7 w-auto object-contain hidden dark:block"
 							/>
 
 							<Image
@@ -44,7 +44,7 @@ export function MainHeader() {
 								width={800}
 								height={800}
 								loading="eager"
-								className="h-8 w-auto object-contain dark:hidden block"
+								className="h-7 w-auto object-contain dark:hidden block"
 							/>
 						</Link>
 

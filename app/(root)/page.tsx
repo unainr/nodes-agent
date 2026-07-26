@@ -1,10 +1,11 @@
+import { HomeView } from "@/modules/home/ui/view/home-view"
 
 function HomePage() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-    hello worldd
+    <>
+   <HomeView/>
     
-    </div>
+    </>
   )
 }
 
